@@ -2040,6 +2040,9 @@ impl VmmProcess<'_> {
     pub fn get_proc_address(&self, module_name : &str, function_name : &str) -> ResultEx<u64> {
         return self.impl_get_proc_address(module_name, function_name);
     }
+    pub fn get_proc_address_pid(&self, pid: u32, module_name : &str, function_name : &str) -> ResultEx<u64> {
+        return self.impl_get_proc_address_pid(pid, module_name, function_name);
+    }
 
     /// Get the process path (retrieved fom kernel mode).
     /// 
@@ -5707,6 +5710,16 @@ impl VmmProcess<'_> {
         let sz_module_name = CString::new(module_name)?;
         let sz_function_name = CString::new(function_name)?;
         let r = (self.vmm.native.VMMDLL_ProcessGetProcAddressU)(self.vmm.native.h, self.pid, sz_module_name.as_ptr(), sz_function_name.as_ptr());
+        if r == 0 {
+            return Err("VMMDLL_ProcessGetProcAddressU: fail.".into());
+        }
+        return Ok(r);
+    }
+
+    fn impl_get_proc_address_pid(&self, pid: u32, module_name : &str, function_name : &str) -> ResultEx<u64> {
+        let sz_module_name = CString::new(module_name)?;
+        let sz_function_name = CString::new(function_name)?;
+        let r = (self.vmm.native.VMMDLL_ProcessGetProcAddressU)(self.vmm.native.h, pid, sz_module_name.as_ptr(), sz_function_name.as_ptr());
         if r == 0 {
             return Err("VMMDLL_ProcessGetProcAddressU: fail.".into());
         }
