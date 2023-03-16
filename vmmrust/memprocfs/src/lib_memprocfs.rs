@@ -791,6 +791,9 @@ impl Vmm<'_> {
     pub fn mem_read(&self, pa : u64, size : usize) -> ResultEx<Vec<u8>> {
         return self.impl_mem_read(u32::MAX, pa, size, 0);
     }
+    pub fn mem_read_pid(&self, pid : u32, pa : u64, size : usize) -> ResultEx<Vec<u8>> {
+        return self.impl_mem_read(pid, pa, size, FLAG_NOCACHE);
+    }
 
     /// Read a contigious physical memory chunk with flags.
     /// 
